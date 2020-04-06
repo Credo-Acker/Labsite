@@ -72,7 +72,7 @@ class TeacherService extends Service {
   }
 
   async uploadResource(username, name, filename) {
-    let resData = await this.app.mysql.query(`insert into resource (name, teacher, username, address, create_time) values ('${filename}', '${name}', '${username}', '/resource/${username}/${filename}', '${new Date().getTime()}')`);
+    let resData = await this.app.mysql.query(`insert into resource (name, teacher, username, address, create_time) values ('${filename}', '${name}', '${username}', '/static/resource/${username}/${filename}', '${new Date().getTime()}')`);
 
     return resData;
   }
