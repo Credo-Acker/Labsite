@@ -287,7 +287,7 @@ class RootService extends Service {
       msg: '查询失败'
     };
     let student = await this.app.mysql.query(sql);
-    if (student.length > 0) {
+    if (student.length >= 0) {
       resData = {
         status: 0,
         msg: 'ok',

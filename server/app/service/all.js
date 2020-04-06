@@ -299,8 +299,6 @@ class AllService extends Service {
   async getTask(data) {
     let { study_class } = data;
     let resData = await this.app.mysql.query(`select * from task where study_class='${study_class}' order by create_time asc`);
-    console.log(`select * from task where study_class='${study_class}' order by create_time asc`);
-    console.log(resData);
     resData = {
       status: 0,
       msg: 'ok',
