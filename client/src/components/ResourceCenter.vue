@@ -112,7 +112,7 @@ export default {
             this.getResource();
         },
         downloadResource(path, name) {
-            window.open(`http://lab.credog.top/api/research/download?path=${path}&name=${name}`, '_blank');
+            window.open(`http://lab.credog.top/api/research/download?path=${encodeURIComponent(path)}&name=${encodeURIComponent(name)}`, '_blank');
         },
         getResource() {
             this.$http.post(`${this.httpAddress}/research/getResource`, 

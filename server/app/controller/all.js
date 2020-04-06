@@ -4,6 +4,7 @@ const Controller = require('egg').Controller;
 const jsonwebtoken = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 
 class AllController extends Controller {
   async login() {
@@ -244,12 +245,10 @@ class AllController extends Controller {
 
   async download() {
     const { ctx } = this;
-    let fileNamePath = ctx.request.query.path;
-    let fileName = ctx.request.query.name;
+    let fileNamePath = decodeURIComponent(ctx.request.query.path);
+    let fileName = decodeURIComponent(ctx.request.query.name);
     const filePath = path.join(this.config.baseDir, 'app/upload/', fileNamePath);
-    console.log(filePath);
-    console.log(fileName);
-    // ctx.attachment([filename], [options]) 将 Content-Disposition 设置为 “附件” 以指示客户端提示下载。
+
     ctx.attachment(fileName, {
         fallback:true,
         type:'attachment' // [string] attachment/inline
