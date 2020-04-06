@@ -32,7 +32,7 @@ class TeacherService extends Service {
       }
     } else if (action == 'delete') {
       if (task.deleteAcce == 'true') { // 删除附件
-         let accessory = await this.app.mysql.query(`select accessory from task where study_class='${study_class}' and name='${task.name}'`)
+         let accessory = await this.app.mysql.query(`select accessory from task where study_class='${study_class}' and name='${task.name}'`);
         accessory = accessory[0].accessory.split('/');
         accessory.splice(accessory.indexOf(task.accessory), 1);
         resData = await this.app.mysql.query(`update task set accessory='${accessory.join('/')}' where study_class='${study_class}' and name='${task.name}'`);
@@ -43,7 +43,8 @@ class TeacherService extends Service {
           }
         }
       } else { // 删除实验任务
-        resData = await this.app.mysql.query(`delete from task where study_class='${study_class}' and name='${task.name}'`)
+        resData = await this.app.mysql.query(`delete from homework where study_class='${study_class}' and task_name='${task.name}'`);
+        resData = await this.app.mysql.query(`delete from task where study_class='${study_class}' and name='${task.name}'`);
         if (resData.affectedRows == 1) {
           resData = {
             status: 0,
@@ -65,7 +66,7 @@ class TeacherService extends Service {
   }
   
   async isExistResource(username, filename) {
-    let data = await this.app.mysql.query(`select id from resource where username='${username}' and name='${filename}'`);
+    let data = await this.app.mysql.query(`select name from resource where username='${username}' and name='${filename}'`);
 
     return data.length > 0 ? true : false;
   }
@@ -105,7 +106,8 @@ class TeacherService extends Service {
     let total = await this.app.mysql.query(`select count(*) as total from homework 
       where study_class='${study_class}' and task_name='${task_name}'`);
     total = total[0].total;
-    let resData = await this.app.mysql.query(`select name, username, student_name, create_time from homework 
+    let resData = await this.app.mysql.query(`select a.name, a.username, b.name as student_name, a.create_time from homework a
+      left join user b on a.username=b.username
       where study_class='${study_class}' and task_name='${task_name}' 
       limit ${page * 10},10`)
     

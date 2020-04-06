@@ -91,7 +91,6 @@ export default {
     mounted: function() {
         this.$http.post(`${this.httpAddress}/research/getAllCourse`, {page: this.page})
             .then((res) => {
-                // console.log('res', res);
                 let data = res.data;
                 if (data.status == 0 && data.msg == 'ok') {
                     this.listData = data.data.data;
@@ -102,26 +101,15 @@ export default {
             .catch((err) => {
                 console.log('err', err);
             })
-        // this.$root.$on('studentLogin', () => {
-        //     this.isDisabled = false;
-        // })
-        // this.$root.$on('teacherLogin', () => {
-        //     this.isDisabled = true;
-        // })
-        // this.$root.$on('logout', () => {
-        //     this.isDisabled = true;
-        // })
     },
     methods: {
         addCourse(row) {
-            // console.log(row);
             this.$http.get(`${this.httpAddress}/research/operateCourse`, {
                 params: {
                     action: "add",
                     course_id: row.course_id,
                 }
             }).then((res) => {
-                // console.log("res", res);
                 let data = res.data;
                 if (data.status == 0) {
                     this.$message({
@@ -142,7 +130,6 @@ export default {
             console.log(`每页 ${val} 条`);
         },
         handleCurrentChange(val) {
-            // console.log(`当前页: ${val}`);
             this.page = val - 1;
             this.getCourse();
         },
@@ -163,7 +150,6 @@ export default {
                     page: this.page
                 })
                 .then((res) => {
-                    // console.log('res', res);
                     let data = res.data;
                     if (data.status == 0 && data.msg == 'ok') {
                         this.listData = data.data.data;

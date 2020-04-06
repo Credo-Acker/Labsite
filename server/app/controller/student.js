@@ -42,8 +42,8 @@ class StudentController extends Controller {
           action = part[0] == 'action' ? part[1] : action;
           name = part[0] == 'name' ? part[1] : name;
         } else {
-          let uplaodBasePathStu = `\\homework\\${course_id}_${study_class}\\${name}\\${username}`;
-          let targetStu = path.join(this.config.baseDir, 'app/upload', `/homework/${course_id}_${study_class}/${name}/${username}/`);
+          let uplaodBasePathStu = `\\homework\\${study_class}\\${name}\\${username}`;
+          let targetStu = path.join(this.config.baseDir, 'app/upload', `/homework/${study_class}/${name}/${username}/`);
           if (!part.filename) {
             continue;
           }

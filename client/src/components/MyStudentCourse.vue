@@ -137,7 +137,6 @@ export default {
     mounted: function() {
         this.$http.post(`${this.httpAddress}/research/getMyCourse`, {page: this.page})
             .then((res) => {
-                // console.log('res', res);
                 let data = res.data;
                 if (data.status == 0 && data.msg == 'ok') {
                     this.listData = data.data.data;
@@ -184,7 +183,7 @@ export default {
                             let accessory = item.accessory.split('/');
                             accessory.pop();
                             accessory.shift();
-                            let accessory_address = accessory.map(ele => `/static/resource/${item.course_id}_${item.study_class}/${item.name}/${ele}`);
+                            let accessory_address = accessory.map(ele => `/static/accessory/${item.study_class}/${item.name}/${ele}`);
                             item.accessory = accessory;
                             item.accessory_address = accessory_address;
                             return item;
@@ -274,9 +273,8 @@ export default {
             }
             this.dialogUploadVisible = true;
         },
-        beforeUploadFileHandler(file) {
+        beforeUploadFileHandler() {
             this.uploadExtraData.action = 'add';
-            console.log(file);
         },
         onSuccessFileHandler() { // 上传成功后
             this.$message({
@@ -336,7 +334,6 @@ export default {
             this.page = val - 1;
             this.$http.post(`${this.httpAddress}/research/getMyCourse`, {page: this.page})
                 .then((res) => {
-                    // console.log('res', res);
                     let data = res.data;
                     if (data.status == 0 && data.msg == 'ok') {
                         this.listData = data.data.data;

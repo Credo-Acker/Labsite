@@ -372,7 +372,7 @@ export default {
             this.nowTask = [];
             this.$http.post(`${this.httpAddress}/research/getTask`, 
                 {
-                    // course_id: this.expandsData.course_id,
+                    course_id: this.expandsData.course_id,
                     study_class: this.expandsData.study_class
                 })
                 .then(res => {
@@ -384,7 +384,7 @@ export default {
                             let accessory = item.accessory.split('/');
                             accessory.pop();
                             accessory.shift();
-                            let accessory_address = accessory.map(ele => `/static/resource/${item.course_id}_${item.study_class}/${item.name}/${ele}`);
+                            let accessory_address = accessory.map(ele => `/static/accessory/${item.study_class}/${item.name}/${ele}`);
                             item.accessory = accessory;
                             item.accessory_address = accessory_address;
                             return item;
@@ -502,7 +502,6 @@ export default {
             this.dialogAccessoryVisible = true;
         },
         showUploadDialog(props) { // 上传附件
-            console.log(props);
             this.uploadExtraData.course_id = props.course_id;
             this.uploadExtraData.study_class = props.study_class;
             this.uploadExtraData.name = props.name;
@@ -520,14 +519,6 @@ export default {
             this.dialogHomeworkVisible = true;
         },
         showNoHomeworkDialog(props) {
-            // console.log(props, detailIndex);
-            // let homework = JSON.parse(props.row.course_homework)[detailIndex].homework;
-            // this.noHomeworkList = [];
-            // for (let key in homework) {
-            //     if (homework[key].filename.length == 0) {
-            //         this.noHomeworkList.push(homework[key]);
-            //     }
-            // }
             this.$http.post(`${this.httpAddress}/research/getNoHomework`, 
                 {
                     course_id: props.course_id,
@@ -568,7 +559,6 @@ export default {
         showEditDialog(props) { // 编辑实验详情
             this.uploadExtraData.course_id = props.course_id;
             this.uploadExtraData.study_class = props.study_class;
-            // let detail = JSON.parse(props.row.course_detail);
             this.nowDetailName = props.name;
             this.editTaskName = props.name;
             let deadline = props.deadline;
@@ -588,7 +578,6 @@ export default {
                             course_id: props.course_id,
                             study_class: props.study_class,
                             task: {
-                                // name: JSON.parse(props.row.course_detail)[detailIndex].name
                                 name: props.name
                             }
                         })
@@ -646,7 +635,6 @@ export default {
                             type: 'success',
                             message: '添加实验任务成功！'
                         })
-                        // this.getMyCourse();
                         this.getTask();
                     } else {
                         this.$message({
@@ -716,7 +704,6 @@ export default {
             this.list.push(file.file);
         },
         submitUpload() {
-            // this.$refs.upload.submit();
             let formData = new FormData();
             this.$refs.upload.submit();
             formData.append('action', 'edit');
@@ -757,7 +744,6 @@ export default {
             console.log(file);
         },
         deleteCourse(row) {
-            // console.log(row);
             this.$confirm('此操作将永久删除该实验任务, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -769,7 +755,6 @@ export default {
                                 course_id: row.course_id,
                             }
                         }).then((res) => {
-                            // console.log("res", res);
                             if (res.data.status == 0 && res.data.msg == 'ok') {
                                 this.$message({
                                     type: 'success',
@@ -794,7 +779,7 @@ export default {
         },
         deleteOneAcce(data, acceIndex) {
             let result = data.split('/'); 
-            console.log(result, acceIndex);
+            // console.log(result, acceIndex);
             this.$http.post(`${this.httpAddress}/research/operateTask`, 
                 {
                     action: 'delete',
@@ -846,7 +831,6 @@ export default {
         getMyCourse() {
             this.$http.post(`${this.httpAddress}/research/getMyCourse`, { page: this.page })
                 .then((res) => {
-                    // console.log('res', res);
                     let data = res.data;
                     if (data.status == 0 && data.msg == 'ok') {
                         this.listData = data.data.data;

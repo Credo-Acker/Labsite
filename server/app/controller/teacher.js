@@ -44,8 +44,8 @@ class TeacherController extends Controller {
             continue;
           }
           file_name = part.filename;
-          let uplaodBasePath = `\\accessory\\${course_id}_${study_class}\\${name}`;
-          let target= path.join(this.config.baseDir, 'app/upload', `/accessory/${course_id}_${study_class}/${name}/`);
+          let uplaodBasePath = `\\accessory\\${study_class}\\${name}`;
+          let target= path.join(this.config.baseDir, 'app/upload', `/accessory/${study_class}/${name}/`);
           this.mkdirPath(path.join('app\\upload', uplaodBasePath));
           task = {
             name,
@@ -163,7 +163,7 @@ class TeacherController extends Controller {
     let files = requestArr.map(item => {
       return {
         name: `${item.username}+${item.name}`,
-        path: __dirname + `/../upload/homework/${course_id}_${study_class}/${name}/${item.username}/${item.name}`
+        path: __dirname + `/../upload/homework/${study_class}/${name}/${item.username}/${item.name}`
       }
     })
 
