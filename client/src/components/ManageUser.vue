@@ -332,7 +332,7 @@ export default {
                 username: scope.row.username,
                 name: scope.row.name,
                 password: '',
-                email: scope.row.email
+                email: scope.row.email || ''
             }
         },
         editUserTeacher(scope) {
@@ -343,7 +343,7 @@ export default {
                 username: scope.row.username,
                 name: scope.row.name,
                 password: '',
-                email: scope.row.email
+                email: scope.row.email || ''
             }
         },
         deleteUser(scope) {
@@ -403,8 +403,8 @@ export default {
                             type: 'success',
                             message: '编辑成功'
                         })
-                        this.getUsers();
                         this.dialogEditStudent = false;
+                        this.getUsers();
                     } else {
                         this.$message({
                             type: 'warning',
@@ -434,8 +434,8 @@ export default {
                             type: 'success',
                             message: '编辑成功'
                         })
-                        this.getUsers();
                         this.dialogEditTeacher = false;
+                        this.getUsers();
                     }
                 })
                 .catch(err => {
@@ -458,8 +458,8 @@ export default {
                             type: 'success',
                             message: '添加成功'
                         })
-                        this.getUsers();
                         this.dialogAddTeacher = false;
+                        this.getUsers();
                     } else {
                         this.$message({
                             type: 'warning',
