@@ -248,7 +248,8 @@ class AllController extends Controller {
     let fileNamePath = decodeURIComponent(ctx.request.query.path);
     let fileName = decodeURIComponent(ctx.request.query.name);
     const filePath = path.join(this.config.baseDir, 'app/upload/', fileNamePath);
-
+    console.log(filePath);
+    console.log(fileName);
     ctx.attachment(fileName, {
         fallback:true,
         type:'attachment' // [string] attachment/inline
