@@ -12,7 +12,8 @@
                     <div v-if="nowTask">
                          <div class="course_detail" v-for="(detailItem, detailIndex) in nowTask" :key="detailIndex">
                             {{ detailItem.name }}
-                            <p class="primaryAcce"><a :href="detailItem.accessory_address[0]" download>{{ detailItem.accessory[0] }}</a></p>
+                            <p class="primaryAcce"><span @click="downloadThis(detailItem.accessory_address[0], detailItem.accessory[0])">{{ detailItem.accessory[0] }}</span></p>
+                            <!-- <a :href="detailItem.accessory_address[0]" download>{{ detailItem.accessory[0] }}</a> -->
                             <div class="classButtons">
                                 <el-button type="primary" class="allButton" size="mini" @click="showAllAccessory(detailItem)">全部附件</el-button>
                                 <el-button type="primary" class="uploadButton" size="mini" @click="showUploadDialog(detailItem)">上传附件</el-button>
@@ -58,7 +59,6 @@
                 label="操作">
                 <template slot-scope="scope">
                     <el-button @click="showStudentsDialog(scope)" size="small">学生名单</el-button>
-                    <!-- <el-button type="danger" @click="deleteCourse(scope.row)" size="small">删除</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -79,7 +79,8 @@
                 closable
                 @close="deleteOneAcce(accessoryData.accessory_address[acceIndex], acceIndex)"
                 style="margin-right: 20px; margin-bottom: 10px">
-                <a :href="accessoryData.accessory_address[acceIndex]" download class="downloadAcceButton">{{ acceItem }}</a>
+                <!-- <a :href="accessoryData.accessory_address[acceIndex]" download class="downloadAcceButton">{{ acceItem }}</a> -->
+                <span @click="downloadThis(accessoryData.accessory_address[acceIndex], acceItem)" class="downloadAcceButton">{{ acceItem }}</span>
             </el-tag>
         </el-dialog>
         <el-dialog title="上传附件" :visible.sync="dialogUploadVisible">
@@ -384,7 +385,7 @@ export default {
                             let accessory = item.accessory.split('/');
                             accessory.pop();
                             accessory.shift();
-                            let accessory_address = accessory.map(ele => `/static/accessory/${item.study_class}/${item.name}/${ele}`);
+                            let accessory_address = accessory.map(ele => `/accessory/${item.study_class}/${item.name}/${ele}`);
                             item.accessory = accessory;
                             item.accessory_address = accessory_address;
                             return item;
@@ -857,7 +858,10 @@ export default {
                         this.homeworkTotal = data.data.total;
                     }
                 })
-        }
+        },
+        downloadThis(path, name) {
+            window.open(`http://lab.credog.top/api/research/download?path=${path}&name=${name}`, '_blank');
+        },
     }
 }
 </script>
@@ -881,8 +885,12 @@ export default {
     min-width: 180px;
     height: 20px;
 }
-.primaryAcce a {
+.primaryAcce span {
+    cursor: pointer;
     color: #409eff;
+}
+.el-tag span {
+    cursor: pointer;
 }
 .editNote {
     margin-left: 5px;

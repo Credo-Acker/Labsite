@@ -12,7 +12,8 @@
                     <div v-if="nowTask">
                          <div class="course_detail" v-for="(detailItem, detailIndex) in nowTask" :key="detailIndex">
                             {{ detailItem.name }}
-                            <p class="primaryAcce"><a :href="detailItem.accessory_address[0]" download>{{ detailItem.accessory[0] }}</a></p>
+                            <p class="primaryAcce"><span @click="downloadThis(detailItem.accessory_address[0], detailItem.accessory[0])">{{ detailItem.accessory[0] }}</span></p>
+                            <!-- <p class="primaryAcce"><a :href="detailItem.accessory_address[0]" download>{{ detailItem.accessory[0] }}</a></p> -->
                             <div class="classButtons">
                                 <el-button type="primary" class="allButton" size="mini" @click="showAllAccessory(detailItem, props)">全部附件</el-button>
                                 <el-button type="primary" class="homeworkButton" size="mini" @click="showAllHomework(detailItem, props)">我的作业</el-button>
@@ -59,7 +60,8 @@
         </div>
         <el-dialog title="附件" :visible.sync="dialogAccessoryVisible" label-width="100px" label-position="left">
             <span v-for="(acceItem, acceIndex) in accessoryData.accessory" :key="acceIndex">
-                <a :href="accessoryData.accessory_address[acceIndex]" download class="downloadAcceButton">{{ acceItem }}</a>
+                <!-- <a :href="accessoryData.accessory_address[acceIndex]" download class="downloadAcceButton">{{ acceItem }}</a> -->
+                <span @click="downloadThis(accessoryData.accessory_address[acceIndex], acceItem)" class="downloadAcceButton">{{ acceItem }}</span>
             </span>
         </el-dialog>
         <el-dialog title="我的作业" :visible.sync="dialogHomeworkVisible" label-width="100px" label-position="left">
@@ -183,7 +185,7 @@ export default {
                             let accessory = item.accessory.split('/');
                             accessory.pop();
                             accessory.shift();
-                            let accessory_address = accessory.map(ele => `/static/accessory/${item.study_class}/${item.name}/${ele}`);
+                            let accessory_address = accessory.map(ele => `/accessory/${item.study_class}/${item.name}/${ele}`);
                             item.accessory = accessory;
                             item.accessory_address = accessory_address;
                             return item;
@@ -345,6 +347,9 @@ export default {
                     console.log('err', err);
                 })
         },
+        downloadThis(path, name) {
+            window.open(`http://lab.credog.top/api/research/download?path=${path}&name=${name}`, '_blank');
+        },
     }
 }
 </script>
@@ -377,8 +382,12 @@ export default {
     margin-left: 20px;
     width: 300px;
 }
-.primaryAcce a {
+.primaryAcce span {
     color: #409eff;
+    cursor: pointer;
+}
+.el-tag span {
+    cursor: pointer;
 }
 .classButtons {
     position: absolute;

@@ -20,7 +20,7 @@ class StudentService extends Service {
     let resData = {};
     if (action == 'add') { // 上传作业
       resData = await this.app.mysql.query(`insert into homework (name, username, create_time, study_class, task_name, address) 
-        values ('${filename}', '${username}', '${new Date().getTime()}', '${study_class}', '${name}', '/static/homework/${study_class}/${name}/${username}/${filename}')`)
+        values ('${filename}', '${username}', '${new Date().getTime()}', '${study_class}', '${name}', '/homework/${study_class}/${name}/${username}/${filename}')`)
     } else if (action == 'delete') { // 删除某作业
       resData = await this.app.mysql.query(`delete from homework where name='${filename}' and username='${username}' and study_class='${study_class}' and task_name='${name}'`)
     }

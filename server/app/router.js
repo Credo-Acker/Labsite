@@ -115,5 +115,8 @@ module.exports = app => {
   // 删除/编辑/新增课程 【管理员】
   router.post('/api/research/operateCourse', jwt, root, controller.root.operateCourse);
 
+  // 下载文件
+  router.get('/api/research/download', controller.all.download);
+
 
 };

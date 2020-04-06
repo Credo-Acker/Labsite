@@ -39,7 +39,8 @@
                 width="180"
                 label="操作">
                 <template slot-scope="scope">
-                    <a :href="scope.row.address" class="download" download>下载</a>
+                    <!-- <a :href="scope.row.address" class="download" download>下载</a> -->
+                    <el-button type="primary" size="mini" @click="downloadResource(scope.row.address, scope.row.name)">下载</el-button>
                     <el-button type="danger" size="small" :disabled="username !='管理员' && scope.row.teacher != username" @click="deleteResource(scope)">删除</el-button>
                 </template>
             </el-table-column>
@@ -208,6 +209,9 @@ export default {
                 .catch((err) => {
                     console.log('err', err);
                 })
+        },
+        downloadResource(path, name) {
+            window.open(`http://lab.credog.top/api/research/download?path=${path}&name=${name}`, '_blank');
         },
     }
 }

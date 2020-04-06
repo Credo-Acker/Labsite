@@ -39,8 +39,8 @@
                 width="180"
                 label="操作">
                 <template slot-scope="scope">
-                    <a :href="scope.row.address" class="download" download>下载</a>
-                    <!-- <el-button type="primary" size="mini" @click="downloadResource(scope.row.address)">下载</el-button> -->
+                    <!-- <a :href="scope.row.address" class="download" download>下载</a> -->
+                    <el-button type="primary" size="mini" @click="downloadResource(scope.row.address, scope.row.name)">下载</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -111,8 +111,8 @@ export default {
             this.currentPage = 0;
             this.getResource();
         },
-        downloadResource(url) {
-            window.open(url, '__blank');
+        downloadResource(path, name) {
+            window.open(`http://lab.credog.top/api/research/download?path=${path}&name=${name}`, '_blank');
         },
         getResource() {
             this.$http.post(`${this.httpAddress}/research/getResource`, 
