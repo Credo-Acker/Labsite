@@ -255,8 +255,9 @@ class AllController extends Controller {
         type:'attachment' // [string] attachment/inline
     });
     const fileSize = fs.statSync(filePath).size;
-    ctx.set('content-length', fileSize) 
-    ctx.set('content-disposition',`attachment; filename=${ctx.request.query.name}`);
+    ctx.set('Content-Length', fileSize) 
+    console.log(`attachment; filename=${ctx.request.query.name}`);
+    ctx.set('Content-Disposition',`attachment; filename=${ctx.request.query.name}`);
     ctx.body = fs.createReadStream(filePath);
   }
   
