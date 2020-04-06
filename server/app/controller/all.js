@@ -247,6 +247,8 @@ class AllController extends Controller {
     let fileNamePath = ctx.request.query.path;
     let fileName = ctx.request.query.name;
     const filePath = path.join(this.config.baseDir, 'app/upload/', fileNamePath);
+    console.log(filePath);
+    console.log(fileName);
     // ctx.attachment([filename], [options]) 将 Content-Disposition 设置为 “附件” 以指示客户端提示下载。
     ctx.attachment(fileName, {
         fallback:true,
