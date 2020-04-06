@@ -17,7 +17,7 @@ class StudentController extends Controller {
     let student_name = decodeURI(ctx.cookies.get('name'), "utf8");
     let resData = {};
 
-    if (ctx.request.header['content-type'] == 'application/json;charset=UTF-8') { // 普通情况 删除作业
+    if (ctx.request.header['content-type'].toLowerCase() == 'application/json;charset=utf-8') { // 普通情况 删除作业
       course_id = ctx.request.body.course_id;
       study_class = ctx.request.body.study_class;
       action = ctx.request.body.action;

@@ -22,7 +22,7 @@ class TeacherController extends Controller {
     let file_name, uplaodBasePath, target;
     let resData = {};
 
-    if (ctx.request.header['content-type'] == 'application/json;charset=UTF-8') { // 普通情况(修改任务信息、删除任务、添加任务时)
+    if (ctx.request.header['content-type'].toLowerCase() == 'application/json;charset=utf-8') { // 普通情况(修改任务信息、删除任务、添加任务时)
       course_id = ctx.request.body.course_id;
       study_class = ctx.request.body.study_class;
       action = ctx.request.body.action;
