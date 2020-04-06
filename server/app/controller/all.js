@@ -248,16 +248,13 @@ class AllController extends Controller {
     let fileNamePath = decodeURIComponent(ctx.request.query.path);
     let fileName = decodeURIComponent(ctx.request.query.name);
     const filePath = path.join(this.config.baseDir, 'app/upload/', fileNamePath);
-    // console.log(filePath);
-    // console.log(ctx.request.query.name);
     ctx.attachment(fileName, {
         fallback:true,
         type:'attachment' // [string] attachment/inline
     });
     const fileSize = fs.statSync(filePath).size;
     ctx.set('Content-Length', fileSize) 
-    console.log(`attachment; filename=${ctx.request.query.name}`);
-    ctx.set('Content-Disposition',`attachment; filename=${ctx.request.query.name}`);
+    this.ctx.set('Content-Type', 'application/octet-stream');
     ctx.body = fs.createReadStream(filePath);
   }
   
