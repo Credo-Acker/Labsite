@@ -281,9 +281,7 @@ export default {
 .el-input {
     width: 300px;
     margin-right: 20px;
-}
-#manageStudent .el-table {
-    margin-top: 10px;
+    margin-bottom: 10px;
 }
 </style>
 <style>
