@@ -290,7 +290,7 @@ export default {
             this.$refs.upload.clearFiles();
         },
         uploadFile(file) {
-            if (file.file.size > 1024 * 1024 * 1) {
+            if (file.file.size > 1024 * 1024 * 20) {
                 this.$message({
                     type: 'warning',
                     message: `${file.file.name}文件超出20M，请重新选择文件`
