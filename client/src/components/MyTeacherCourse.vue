@@ -691,7 +691,7 @@ export default {
         beforeUploadFileHandler() {
             
         },
-        onSuccessFileHandler() { // 上传成功后
+        onSuccessFileHandler(data) { // 上传成功后
             if (data.status == 0 && data.msg == 'ok') {
                 this.$message({
                     type: 'success',
