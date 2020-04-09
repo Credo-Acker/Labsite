@@ -187,7 +187,7 @@ export default {
                                 type: 'success',
                                 message: '删除成功'
                             })
-                            this.getUsers();
+                            this.getStudents();
                         } else {
                             this.$message({
                                 type: 'warning',
@@ -224,7 +224,7 @@ export default {
                             type: 'success',
                             message: '编辑成功'
                         })
-                        this.getUsers();
+                        this.getStudents();
                         this.dialogEditStudent = false;
                     } else {
                         this.$message({
@@ -237,7 +237,7 @@ export default {
                     console.log('err', err);
                     this.$message({
                         type: 'warning',
-                        message: '编辑失败'
+                        message: '编辑出错'
                     })
                 })
         },
@@ -278,7 +278,7 @@ export default {
     display: flex;
     justify-content: center;
 }
-.el-input {
+#manageStudent .el-input {
     width: 300px;
     margin-right: 20px;
     margin-bottom: 10px;
