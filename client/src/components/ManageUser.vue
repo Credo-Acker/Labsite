@@ -389,7 +389,6 @@ export default {
             
         },
         comfirmEditStudent() {
-            console.log(this.editStudent);
             this.$http.post(`${this.httpAddress}/research/operateUser`, 
                 {
                     action: 'edit',
@@ -416,7 +415,7 @@ export default {
                     console.log('err', err);
                     this.$message({
                         type: 'warning',
-                        message: '编辑失败'
+                        message: '编辑出错'
                     })
                 })
         },
@@ -533,14 +532,11 @@ export default {
 .el-input {
     width: 200px;
     margin-right: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .el-select {
     width: 200px;
     margin-right: 10px;
-}
-#manageUser .el-table {
-    margin-top: 10px;
 }
 </style>
 <style>
