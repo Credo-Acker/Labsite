@@ -17,7 +17,7 @@
         </el-select>
         <el-table
             :data="listData"
-            stripe
+            border
             style="width: 100%">
             <el-table-column
                 prop="name"
@@ -157,6 +157,9 @@ export default {
     background: #409EFF;
     border-radius: 4px;
     color: #ffffff;
+}
+#resourceCnter .el-table {
+    margin-top: 10px;
 }
 </style>
 

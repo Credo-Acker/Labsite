@@ -17,7 +17,7 @@
         </el-select>
         <el-table
             :data="listData"
-            stripe
+            border
             style="width: 100%">
             <el-table-column
                 prop="course_id"
@@ -177,5 +177,8 @@ export default {
 .el-input {
     width: 300px;
     margin-right: 20px;
+}
+#allCourse .el-table {
+    margin-top: 10px;
 }
 </style>

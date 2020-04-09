@@ -21,7 +21,7 @@
             <el-tab-pane label="学生" name="1">
                 <el-table
                     :data="listData"
-                    stripe
+                    border
                     style="width: 100%">
                     <el-table-column
                         prop="username"
@@ -61,7 +61,7 @@
             <el-tab-pane label="教师" name="2">
                 <el-table
                     :data="listData"
-                    stripe
+                    border
                     style="width: 100%">
                     <el-table-column
                         prop="username"
@@ -538,6 +538,9 @@ export default {
 .el-select {
     width: 200px;
     margin-right: 10px;
+}
+#manageUser .el-table {
+    margin-top: 10px;
 }
 </style>
 <style>

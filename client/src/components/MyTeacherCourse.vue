@@ -2,7 +2,7 @@
     <div id="myTeacherCourse">
         <el-table
             :data="listData"
-            stripe
+            border
             style="width: 100%"
             @expand-change="openTask"
             :row-key="getRowKeys"
@@ -302,6 +302,7 @@ export default {
             multipleSelection: [],
             requestHomeworkData: {}, // 请求作业列表
             noHomeworkList: [], // 未上传作业名单
+            canRequestUploadFile: true,
         }
     },
     filters: {
@@ -380,7 +381,6 @@ export default {
                     let data = res.data;
                     if (data.status == 0 && data.msg == 'ok') {
                         this.nowTask = data.data;
-                        console.log(this.nowTask);
                         this.nowTask = this.nowTask.map(item => {
                             let accessory = item.accessory.split('/');
                             accessory.pop();
@@ -390,7 +390,6 @@ export default {
                             item.accessory_address = accessory_address;
                             return item;
                         })
-                        console.log(this.nowTask);
                     } else {
                         this.$message({
                             message: `${data.msg}`,
@@ -690,53 +689,75 @@ export default {
                 })
         },
         beforeUploadFileHandler() {
-            // console.log(file);
+            
         },
         onSuccessFileHandler() { // 上传成功后
-            this.$message({
-                type: 'success',
-                message: '上传成功！'
-            })
+            if (data.status == 0 && data.msg == 'ok') {
+                this.$message({
+                    type: 'success',
+                    message: '上传成功！'
+                })
+                this.getMyCourse();
+            } else {
+                this.$message({
+                    type: 'warning',
+                    message: data.msg
+                })
+            }
             this.$refs.upload.clearFiles();
-            this.getMyCourse();
         },
         uploadFile(file) {
-            this.fileData.append('files', file.file);
-            this.list.push(file.file);
+            if (file.file.size > 1024 * 1024 * 20) {
+                this.$message({
+                    type: 'warning',
+                    message: `${file.file.name}文件超出20M，请重新选择文件`
+                })
+                this.canRequestUploadFile = false;
+            } else {
+                this.fileData.append('files', file.file);
+                this.list.push(file.file);
+            }
         },
         submitUpload() {
             let formData = new FormData();
             this.$refs.upload.submit();
-            formData.append('action', 'edit');
-            formData.append('course_id', this.uploadExtraData.course_id);
-            formData.append('study_class', this.uploadExtraData.study_class);
-            formData.append('name', this.uploadExtraData.name);
-            for (let i = 0; i < this.list.length; i++) {
-                formData.append('files', this.list[i]);
+            if (this.canRequestUploadFile) {
+                formData.append('action', 'edit');
+                formData.append('course_id', this.uploadExtraData.course_id);
+                formData.append('study_class', this.uploadExtraData.study_class);
+                formData.append('name', this.uploadExtraData.name);
+                for (let i = 0; i < this.list.length; i++) {
+                    formData.append('files', this.list[i]);
+                }
+                this.$http.post(`${this.httpAddress}/research/operateTask`, formData)
+                    .then((res) => {
+                        let data = res.data;
+                        if (data.status == 0 && data.msg == 'ok') {
+                            this.$message({
+                                message: "上传成功",
+                                type: 'success'
+                            });
+                            this.fileList = [];
+                            this.list = [];
+                            this.uploadFileList = [];
+                            this.fileData = new FormData();
+                            this.getTask();
+                        } else {
+                            this.$message({
+                                message: '上传失败',
+                                type: 'warning'
+                            })
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            } else {
+                this.fileList = [];
+                this.list = [];
+                this.uploadFileList = [];
+                this.fileData = new FormData();
             }
-            this.$http.post(`${this.httpAddress}/research/operateTask`, formData)
-                .then((res) => {
-                    let data = res.data;
-                    if (data.status == 0 && data.msg == 'ok') {
-                        this.$message({
-                            message: "上传成功",
-                            type: 'success'
-                        });
-                        this.fileList = [];
-                        this.list = [];
-                        this.uploadFileList = [];
-                        this.fileData = new FormData();
-                        this.getTask();
-                    } else {
-                        this.$message({
-                            message: '上传失败',
-                            type: 'warning'
-                        })
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                })
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -780,16 +801,14 @@ export default {
         },
         deleteOneAcce(data, acceIndex) {
             let result = data.split('/'); 
-            // console.log(result, acceIndex);
             this.$http.post(`${this.httpAddress}/research/operateTask`, 
                 {
                     action: 'delete',
-                    course_id: result[3].split('_')[0],
-                    study_class: result[3].split('_')[1],
+                    study_class: result[2],
                     task: {
-                        name: result[4],
+                        name: result[3],
                         deleteAcce: 'true',
-                        accessory: result[5],
+                        accessory: result[4],
                     }   
                 })
                 .then(res => {

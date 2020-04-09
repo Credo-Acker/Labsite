@@ -32,7 +32,8 @@ class TeacherService extends Service {
       }
     } else if (action == 'delete') {
       if (task.deleteAcce == 'true') { // 删除附件
-         let accessory = await this.app.mysql.query(`select accessory from task where study_class='${study_class}' and name='${task.name}'`);
+        let accessory = await this.app.mysql.query(`select accessory from task where study_class='${study_class}' and name='${task.name}'`);
+        console.log(accessory)
         accessory = accessory[0].accessory.split('/');
         accessory.splice(accessory.indexOf(task.accessory), 1);
         resData = await this.app.mysql.query(`update task set accessory='${accessory.join('/')}' where study_class='${study_class}' and name='${task.name}'`);

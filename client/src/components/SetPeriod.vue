@@ -365,4 +365,7 @@ export default {
     display: flex;
     justify-content: center;
 }
+#setPeriod .el-table {
+    margin-top: 10px;
+}
 </style>

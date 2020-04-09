@@ -18,6 +18,7 @@
         <el-button type="primary" class="uploadButton" @click="showUploadDialog()">上传资源</el-button>
         <el-table
             :data="listData"
+            border
             style="width: 100%">
             <el-table-column
                 prop="name"
@@ -61,7 +62,6 @@
                 ref="upload"
                 multiple
                 :action="uploadUrl"
-                :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :on-exceed="handelExceed"
                 :file-list="uploadFileList"
@@ -140,8 +140,16 @@ export default {
         showUploadDialog() { // 上传附件
             this.dialogUploadVisible = true;
         },
-        beforeUploadFileHandler() {
-            // console.log(file);
+        beforeUploadFileHandler(file) {
+            let canUpload = true;
+            if (file.size > 1024 * 1024 * 20) {
+                this.$message({
+                    type: 'warning',
+                    message: '有文件超出20M，请重新选择文件'
+                })
+                canUpload = false;
+            }
+            return canUpload;
         },
         handelExceed() {
             this.$message({
@@ -149,22 +157,26 @@ export default {
                 message: '每次只能上传一个文件'
             })
         },
-        onSuccessFileHandler() { // 上传成功后
-            this.$message({
-                type: 'success',
-                message: '上传成功！'
-            })
+        onSuccessFileHandler(data) { // 上传成功后
+            if (data.status == 0 && data.msg == 'ok') {
+                this.$message({
+                    type: 'success',
+                    message: '上传成功！'
+                })
+                this.getResource();
+            } else {
+                this.$message({
+                    type: 'warning',
+                    message: data.msg
+                })
+            }
             this.$refs.upload.clearFiles();
-            this.getResource();
         },
         submitUpload() {
             this.$refs.upload.submit();
         },
         handleRemove(file, fileList) {
-            console.log(file, fileList);
-        },
-        handlePreview(file) {
-            console.log(file);
+            console.log(file, fileList, 'handleRemove');
         },
         deleteResource(scope) {
             this.$http.post(`${this.httpAddress}/research/deleteResource`, 
@@ -241,5 +253,8 @@ export default {
     border-radius: 4px;
     color: #ffffff;
     margin-right: 10px;
+}
+#manageResource .el-table {
+    margin-top: 10px;
 }
 </style>

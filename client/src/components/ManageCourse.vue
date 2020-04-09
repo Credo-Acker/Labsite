@@ -28,7 +28,7 @@
         </div>
         <el-table
             :data="listData"
-            stripe
+            border
             style="width: 100%">
             <el-table-column
                 prop="course_id"
@@ -603,6 +603,9 @@ export default {
 </script>
 
 <style scoped>
+#manageCourse .el-table {
+    margin-top: 10px;
+}
 .pagination {
     margin-top: 20px;
     display: flex;
