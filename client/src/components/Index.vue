@@ -186,7 +186,7 @@ export default {
                                 path: 'setPeriod'
                             })
                         }
-                        if (data.data.email == null) {
+                        if (data.data.email == null || data.data.email == '') {
                             this.bindEmail();
                         }
                         this.isLogined = true;

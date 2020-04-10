@@ -37,6 +37,10 @@
                 </template>
             </el-table-column>
             <el-table-column
+                prop="class"
+                label="班级">
+            </el-table-column>
+            <el-table-column
                 prop="major"
                 label="专业">
             </el-table-column>

@@ -24,6 +24,10 @@
                     border
                     style="width: 100%">
                     <el-table-column
+                        type="index"
+                        width="40">
+                    </el-table-column>
+                    <el-table-column
                         prop="username"
                         label="账号"
                         width="110">
@@ -39,6 +43,10 @@
                         <template slot-scope="scope">
                             {{ scope.row.sex == 1 ? '女' : '男' }}
                         </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="class"
+                        label="班级">
                     </el-table-column>
                     <el-table-column
                         prop="major"
@@ -63,6 +71,10 @@
                     :data="listData"
                     border
                     style="width: 100%">
+                    <el-table-column
+                        type="index"
+                        width="50">
+                    </el-table-column>
                     <el-table-column
                         prop="username"
                         label="账号"

@@ -187,7 +187,7 @@ class TeacherController extends Controller {
       status: 0,
       msg: 'ok',
       data: {
-        url: `http://localhost:7001/static/download/${course_name}.zip`
+        url: `http://lab.credog.top/static/download/${course_name}.zip`
       }
     }
   }

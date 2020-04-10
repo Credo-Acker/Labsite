@@ -53,7 +53,7 @@ module.exports = appInfo => {
 
   config.multipart = {
     mode: 'stream',
-    fileExtensions: [ '.pptx', '.docx', '.doc', '.cpp', '.pdf', '.xlsx' ]
+    fileExtensions: [ '.pptx', '.docx', '.doc', '.cpp', '.pdf', '.xlsx', '.cpp', '.txt' ]
   }
 
   // add your user config here

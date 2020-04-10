@@ -184,6 +184,10 @@
                 :data="nowStudentList"
                 style="width: 100%">
                 <el-table-column
+                    type="index"
+                    width="50">
+                </el-table-column>
+                <el-table-column
                     prop="username"
                     label="学号"
                     width="120">
