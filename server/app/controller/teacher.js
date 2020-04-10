@@ -29,64 +29,73 @@ class TeacherController extends Controller {
       task = ctx.request.body.task;
       resData = await this.service.teacher.operateTask(action, course_id, study_class, task);
     } else { // 上传附件时
-      stream = await ctx.multipart();
-      let part;
-      while ((part = await stream()) != null) {
-        if (part.length) {
-          course_id = part[0] == 'course_id' ? part[1] : course_id;
-          study_class = part[0] == 'study_class' ? part[1] : study_class;
-          action = part[0] == 'action' ? part[1] : action;
-          name = part[0] == 'name' ? part[1] : name;
-          index = part[0] == 'index' ? part[1] : index;
-        } else {
-          console.log(part.filename);
-          if (!part.filename) {
-            continue;
-          }
-          file_name = part.filename;
-          let uplaodBasePath = `\\accessory\\${study_class}\\${name}`;
-          let target= path.join(this.config.baseDir, 'app/upload', `/accessory/${study_class}/${name}/`);
-          this.mkdirPath(path.join('app\\upload', uplaodBasePath));
-          task = {
-            name,
-            file_name
-          }
-          let isExist = await this.service.teacher.isExistFile(course_id, study_class, name, file_name);
-          if (isExist) {
-            ctx.status = 200;
-            resData = {
-              status: 1,
-              msg: `已经存在${file_name}文件`,
-            }
+      try {
+        stream = await ctx.multipart();
+        let part;
+        while ((part = await stream()) != null) {
+          if (part.length) {
+            course_id = part[0] == 'course_id' ? part[1] : course_id;
+            study_class = part[0] == 'study_class' ? part[1] : study_class;
+            action = part[0] == 'action' ? part[1] : action;
+            name = part[0] == 'name' ? part[1] : name;
+            index = part[0] == 'index' ? part[1] : index;
           } else {
-            // 生成一个文件写入 文件流
-            let writeStream = fs.createWriteStream(target + file_name);
-            try { 
-              // 异步把文件流 写入
-              await awaitWriteStream(part.pipe(writeStream));
-              resData = await this.service.teacher.operateTask(action, course_id, study_class, task);
-              if (resData.changedRows == 1) {
-                resData = {
-                  status: 0,
-                  msg: 'ok',
-                  data: {
-                    course_id: course_id,
-                    study_class: study_class,
+            console.log(part.filename);
+            if (!part.filename) {
+              continue;
+            }
+            file_name = part.filename;
+            let uplaodBasePath = `\\accessory\\${study_class}\\${name}`;
+            let target= path.join(this.config.baseDir, 'app/upload', `/accessory/${study_class}/${name}/`);
+            this.mkdirPath(path.join('app\\upload', uplaodBasePath));
+            task = {
+              name,
+              file_name
+            }
+            let isExist = await this.service.teacher.isExistFile(course_id, study_class, name, file_name);
+            if (isExist) {
+              ctx.status = 200;
+              resData = {
+                status: 1,
+                msg: `已经存在${file_name}文件`,
+              }
+            } else {
+              // 生成一个文件写入 文件流
+              let writeStream = fs.createWriteStream(target + file_name);
+              try { 
+                // 异步把文件流 写入
+                await awaitWriteStream(part.pipe(writeStream));
+                resData = await this.service.teacher.operateTask(action, course_id, study_class, task);
+                if (resData.changedRows == 1) {
+                  resData = {
+                    status: 0,
+                    msg: 'ok',
+                    data: {
+                      course_id: course_id,
+                      study_class: study_class,
+                    }
                   }
                 }
+              } catch (err) {
+                // 如果出现错误，关闭管道
+                await sendToWormhole(part);
+                ctx.status = 200;
+                ctx.body = {
+                  status: 1,
+                  msg: err,
+                }
+                throw err;
               }
-            } catch (err) {
-              // 如果出现错误，关闭管道
-              await sendToWormhole(part);
-              ctx.status = 200;
-              ctx.body = {
-                status: 1,
-                msg: err,
-              }
-              throw err;
             }
+            await sendToWormhole(part);
           }
-          await sendToWormhole(part);
+        }
+      } catch (error) {
+        if (error.status == 400) {
+          resData = {
+            status: 1,
+            msg: '上传文件类型不在白名单中，请联系管理员添加'
+          }
         }
       }
     }
@@ -98,47 +107,58 @@ class TeacherController extends Controller {
 
   async uploadResource() {
     const { ctx } = this;
-    let stream = await ctx.getFileStream();
-    let username = ctx.cookies.get('username');
-    let name = decodeURI(ctx.cookies.get('name'), "utf8");
-    let filename = stream.filename;
-    let uplaodBasePath = `\\resource\\${username}`;
-    let target= path.join(this.config.baseDir, 'app/upload', `/resource/${username}/`);
-    this.mkdirPath(path.join('app\\upload', uplaodBasePath));
-    let checkAddress = path.join(this.config.baseDir, `/app/upload/resource/${username}/`, filename).replace(/\\/g, '/');
     let resData = {};
 
-    let isExist = await this.service.teacher.isExistResource(username, filename);
-    if (isExist) {
-      ctx.status = 200;
-      resData = {
-        status: 1,
-        msg: `已经存在${filename}文件`,
-      }
-    } else {
-      // 生成一个文件写入 文件流
-      let writeStream = fs.createWriteStream(target + filename);
-      try { 
-        // 异步把文件流 写入
-        await awaitWriteStream(stream.pipe(writeStream));
-        resData = await this.service.teacher.uploadResource(username, name, filename);
-        if (resData.affectedRows == 1) {
-          resData = {
-            status: 0,
-            msg: 'ok',
-          }
-        }
-      } catch (err) {
-        // 如果出现错误，关闭管道
-        await sendToWormhole(stream);
+    try {
+      let stream = await ctx.getFileStream();
+      let username = ctx.cookies.get('username');
+      let name = decodeURI(ctx.cookies.get('name'), "utf8");
+      let filename = stream.filename;
+      let uplaodBasePath = `\\resource\\${username}`;
+      let target= path.join(this.config.baseDir, 'app/upload', `/resource/${username}/`);
+      this.mkdirPath(path.join('app\\upload', uplaodBasePath));
+      let checkAddress = path.join(this.config.baseDir, `/app/upload/resource/${username}/`, filename).replace(/\\/g, '/');
+
+      let isExist = await this.service.teacher.isExistResource(username, filename);
+      if (isExist) {
         ctx.status = 200;
-        ctx.body = {
+        resData = {
           status: 1,
-          msg: err,
+          msg: `已经存在${filename}文件`,
         }
-        throw err;
+      } else {
+        // 生成一个文件写入 文件流
+        let writeStream = fs.createWriteStream(target + filename);
+        try {
+          // 异步把文件流 写入
+          await awaitWriteStream(stream.pipe(writeStream));
+          resData = await this.service.teacher.uploadResource(username, name, filename);
+          if (resData.affectedRows == 1) {
+            resData = {
+              status: 0,
+              msg: 'ok',
+            }
+          }
+        } catch (err) {
+          // 如果出现错误，关闭管道
+          await sendToWormhole(stream);
+          ctx.status = 200;
+          ctx.body = {
+            status: 1,
+            msg: err,
+          }
+          throw err;
+        }
+      }
+    } catch (error) {
+      if (error.status == 400) {
+        resData = {
+          status: 1,
+          msg: '上传文件类型不在白名单中，请联系管理员添加'
+        }
       }
     }
+    
 
     console.log('上传了资源', resData);
     ctx.status = 200;

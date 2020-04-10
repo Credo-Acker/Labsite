@@ -33,67 +33,76 @@ class StudentController extends Controller {
         }
       }
     } else { // 上传附件时 上传作业
-      stream = await ctx.multipart();
-      let part;
-      while ((part = await stream()) != null) {
-        if (part.length) {
-          course_id = part[0] == 'course_id' ? part[1] : course_id;
-          study_class = part[0] == 'study_class' ? part[1] : study_class;
-          action = part[0] == 'action' ? part[1] : action;
-          name = part[0] == 'name' ? part[1] : name;
-        } else {
-          let uplaodBasePathStu = `\\homework\\${study_class}\\${name}\\${username}`;
-          let targetStu = path.join(this.config.baseDir, 'app/upload', `/homework/${study_class}/${name}/${username}/`);
-          if (!part.filename) {
-            continue;
-          }
-          this.mkdirPath(path.join('app\\upload', uplaodBasePathStu));
-          file_name = part.filename;
-          let isExist = await this.service.student.isExistFile(course_id, study_class, name, username, file_name);
-          let isDeadline = await this.service.student.isDeadline(course_id, study_class, name);
-          if (isExist && !isDeadline) {
-            ctx.status = 200;
-            resData = {
-              status: 1,
-              msg: `已经存在${file_name}文件`,
-            }
-          } else if (!isExist && isDeadline) {
-            ctx.status = 200;
-            resData = {
-              status: 1,
-              msg: `已过上传截止时间`,
-            }
-          } else if (!isExist && !isDeadline) {
-            // 生成一个文件写入 文件流
-            let writeStreamStu = fs.createWriteStream(targetStu + `${file_name}`);
-            try { 
-              // 异步把文件流 写入
-              await awaitWriteStream(part.pipe(writeStreamStu));
-              resData = await this.service.student.editHomework(action, course_id, study_class, name, student_name, username, file_name);
-              if (resData.changedRows == 1) {
-                resData = {
-                  status: 0,
-                  msg: 'ok',
-                }
-              }
-            } catch (err) {
-              // 如果出现错误，关闭管道
-              await sendToWormhole(part);
-              ctx.status = 200;
-              ctx.body = {
-                status: 1,
-                msg: err,
-              }
-              throw err;
-            }
+      try {
+        stream = await ctx.multipart();
+        let part;
+        while ((part = await stream()) != null) {
+          if (part.length) {
+            course_id = part[0] == 'course_id' ? part[1] : course_id;
+            study_class = part[0] == 'study_class' ? part[1] : study_class;
+            action = part[0] == 'action' ? part[1] : action;
+            name = part[0] == 'name' ? part[1] : name;
           } else {
-            ctx.status = 200;
-            resData = {
-              status: 1,
-              msg: `已过上传截止时间且已存在${file_name}文件`,
+            let uplaodBasePathStu = `\\homework\\${study_class}\\${name}\\${username}`;
+            let targetStu = path.join(this.config.baseDir, 'app/upload', `/homework/${study_class}/${name}/${username}/`);
+            if (!part.filename) {
+              continue;
             }
+            this.mkdirPath(path.join('app\\upload', uplaodBasePathStu));
+            file_name = part.filename;
+            let isExist = await this.service.student.isExistFile(course_id, study_class, name, username, file_name);
+            let isDeadline = await this.service.student.isDeadline(course_id, study_class, name);
+            if (isExist && !isDeadline) {
+              ctx.status = 200;
+              resData = {
+                status: 1,
+                msg: `已经存在${file_name}文件`,
+              }
+            } else if (!isExist && isDeadline) {
+              ctx.status = 200;
+              resData = {
+                status: 1,
+                msg: `已过上传截止时间`,
+              }
+            } else if (!isExist && !isDeadline) {
+              // 生成一个文件写入 文件流
+              let writeStreamStu = fs.createWriteStream(targetStu + `${file_name}`);
+              try { 
+                // 异步把文件流 写入
+                await awaitWriteStream(part.pipe(writeStreamStu));
+                resData = await this.service.student.editHomework(action, course_id, study_class, name, student_name, username, file_name);
+                if (resData.changedRows == 1) {
+                  resData = {
+                    status: 0,
+                    msg: 'ok',
+                  }
+                }
+              } catch (err) {
+                // 如果出现错误，关闭管道
+                await sendToWormhole(part);
+                ctx.status = 200;
+                ctx.body = {
+                  status: 1,
+                  msg: err,
+                }
+                throw err;
+              }
+            } else {
+              ctx.status = 200;
+              resData = {
+                status: 1,
+                msg: `已过上传截止时间且已存在${file_name}文件`,
+              }
+            }
+            await sendToWormhole(part);
           }
-          await sendToWormhole(part);
+        }
+      } catch (error) {
+        if (error.status == 400) {
+          resData = {
+            status: 1,
+            msg: '上传文件类型不在白名单中，请联系管理员添加'
+          }
         }
       }
     }

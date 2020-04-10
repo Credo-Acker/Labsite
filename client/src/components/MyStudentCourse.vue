@@ -109,9 +109,9 @@ export default {
     data: function() {
         return {
             httpAddress: '/api',
-            dialogAccessoryVisible: false,
-            dialogHomeworkVisible: false,
-            dialogUploadVisible: false,
+            dialogAccessoryVisible: false, // 展示附件
+            dialogHomeworkVisible: false, // 展示我的作业
+            dialogUploadVisible: false, // 展示上传作业
             nowTime: new Date().getTime(),
             listData: [],
             expands: [],
@@ -136,6 +136,16 @@ export default {
             let date = new Date(parseInt(val));
             return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
         }
+    },
+    watch: {
+        dialogUploadVisible(val) {
+            if (val == false) {
+                this.fileList = [];
+                this.list = [];
+                this.uploadFileList = [];
+                this.fileData = new FormData();
+            }
+        },
     },
     mounted: function() {
         this.$http.post(`${this.httpAddress}/research/getMyCourse`, {page: this.page})
@@ -328,7 +338,11 @@ export default {
                             this.$message({
                                 message: data.msg,
                                 type: 'warning'
-                            })
+                            });
+                            this.fileList = [];
+                            this.list = [];
+                            this.uploadFileList = [];
+                            this.fileData = new FormData();
                         }
                     })
                     .catch(err => {

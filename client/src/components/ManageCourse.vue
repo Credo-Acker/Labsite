@@ -88,7 +88,6 @@
             </el-pagination>
         </div>
         <el-dialog title="学生名单" :visible.sync="dialogViewStudentListVisible" width="800px">
-            <el-button type="primary" @click="addStudent">新增学生</el-button>
             <el-table
                 :data="nowStudentList"
                 style="width: 100%">
@@ -130,13 +129,6 @@
                     prop="grade"
                     label="年级"
                     width="70">
-                </el-table-column>
-                <el-table-column
-                    label="删除"
-                    width="100">
-                    <template slot-scope="scope">
-                        <el-button class="buttonDeleteStudent" type="danger" @click="deleteStudent(scope)" size="small">删除</el-button>
-                    </template>
                 </el-table-column>
             </el-table>
         </el-dialog>

@@ -114,6 +114,13 @@ export default {
             return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
         }
     },
+    watch: {
+        dialogUploadVisible(val) {
+            if (val == false) {
+                this.uploadFileList = [];
+            }
+        }
+    },
     mounted: function() {
         this.getResource();
         this.username = sessionStorage.getItem('username');

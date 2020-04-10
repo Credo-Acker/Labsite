@@ -315,6 +315,23 @@ export default {
             return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
         }
     },
+    watch: {
+        dialogUploadVisible(val) {
+            if (val == false) {
+                this.uploadFileList = [];
+                this.fileList = [];
+                this.list = [];
+                this.uploadFileList = [];
+                this.fileData = new FormData();
+            }
+        },
+        dialogAddTaskVisible(val) {
+            if (val == false) {
+                this.taskName = '';
+                this.deadlineTime = '';
+            }
+        },
+    },
     mounted: function() {
         this.getMyCourse();
     },
@@ -748,9 +765,13 @@ export default {
                             this.getTask();
                         } else {
                             this.$message({
-                                message: '上传失败',
+                                message: data.msg,
                                 type: 'warning'
                             })
+                            this.fileList = [];
+                            this.list = [];
+                            this.uploadFileList = [];
+                            this.fileData = new FormData();
                         }
                     })
                     .catch(err => {
