@@ -246,6 +246,7 @@ export default {
                                 type: 'warning',
                                 message: data.msg
                             });
+                            this.loading.close();
                         }
                     })
                     .catch(err => {
