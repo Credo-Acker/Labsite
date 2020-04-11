@@ -241,12 +241,14 @@ export default {
                         if (data.status == 0 && data.msg == 'ok') {
                             this.inputCode();
                             this.loading.close();
+                            this.email = value;
                         } else {
                             this.$message({
                                 type: 'warning',
                                 message: data.msg
                             });
                             this.loading.close();
+                            this.bindEmail();
                         }
                     })
                     .catch(err => {

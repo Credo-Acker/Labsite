@@ -195,6 +195,7 @@ class AllController extends Controller {
     const { ctx } = this;
     const data = ctx.request.body;
     let messageId = ctx.cookies.get('messageId');
+    data.username = data.username ? data.username : ctx.cookies.get('username');
     let resData = await this.service.all.confirmEditPassword(data, messageId);
 
     ctx.status = 200;
@@ -223,12 +224,13 @@ class AllController extends Controller {
   }
 
   async confirmEmail() {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const data = ctx.request.body;
     data.username = ctx.cookies.get('username');
     data.email = ctx.cookies.get('email');
     data.messageId = ctx.cookies.get('messageId');
     let resData = await this.service.all.confirmEmail(data);
+
     if (resData.status == 0 && resData.msg == 'ok') {
       ctx.cookies.set('email', 0, {
         maxAge: 60 * 60 * 1000,
@@ -238,6 +240,40 @@ class AllController extends Controller {
         maxAge: 60 * 60 * 1000,
         httpOnly: true,
       })
+      let authToken = ctx.cookies.get('token');
+      let res = jsonwebtoken.verify(authToken, app.config.jwt.secret);
+      try {
+        console.log(res);
+        let token = jsonwebtoken.sign({
+          username: res.username,
+          name: res.name,
+          identity: res.identity,
+          email: data.email, //需要存储的 token 数据
+        }, app.config.jwt.secret, { expiresIn: '1h' });
+        ctx.cookies.set("token", token, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+        });
+        ctx.cookies.set("username", res.username, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+        });
+        ctx.cookies.set("name", encodeURI(res.name, "utf8"), {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+        });
+        ctx.cookies.set("identity", res.identity, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+        });
+        ctx.cookies.set("email", data.email, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+        
     }
 
     ctx.status = 200;

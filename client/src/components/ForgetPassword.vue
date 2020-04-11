@@ -110,6 +110,11 @@ export default {
                             this.$router.push({
                                 name: 'allCourse'
                             })
+                        } else {
+                            this.$message({
+                                type: 'warning',
+                                message: data.msg
+                            })
                         }
                     })
                     .catch(err => {

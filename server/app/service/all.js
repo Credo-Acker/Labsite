@@ -132,29 +132,35 @@ class AllService extends Service {
         subject: '修改密码',
         html: `<p>以下是你的重置密码安全码：<b><span style="color: red">${code}</span></b></p>`
       };
-      console.log(mailOptions);
-      let messageId = await this.sendEmail(mailOptions);
-      resData = await this.app.mysql.query(`insert into code (code, messageId, create_time, username) values ('${code}', '${messageId}', '${new Date().getTime()}', '${username}')`);
-      if (resData.affectedRows == 1) {
-        resData = {
-          status: 0,
-          msg: 'ok',
-          data: {
-            messageId: messageId
+      // console.log(mailOptions);
+      try {
+        let messageId = await this.sendEmail(mailOptions);
+        resData = await this.app.mysql.query(`insert into code (code, messageId, create_time, username) values ('${code}', '${messageId}', '${new Date().getTime()}', '${username}')`);
+        if (resData.affectedRows == 1) {
+          resData = {
+            status: 0,
+            msg: 'ok',
+            data: {
+              messageId: messageId
+            }
+          }
+        } else {
+          resData = { 
+            status: 1,
+            msg: '系统出错',
           }
         }
-      } else {
-        resData = { 
+      } catch (error) {
+        console.log(error);
+        resData = {
           status: 1,
-          msg: '系统出错',
-          data: {}
+          msg: '发送失败，请重新输入'
         }
       }
     } else {
       resData = { 
         status: 1,
-        msg: '没有设置重置密码邮箱',
-        data: {}
+        msg: '账号出错',
       }
     }
 
@@ -210,22 +216,31 @@ class AllService extends Service {
       subject: '绑定邮箱',
       html: `<p>以下是你的绑定邮箱安全码：<b><span style="color: red">${code}</span></b></p>`
     };
-    console.log(mailOptions)
-    let messageId = await this.sendEmail(mailOptions);
-    console.log(messageId)
-    let resData = await this.app.mysql.query(`insert into code (code, messageId, create_time, username) values ('${code}', '${messageId}', '${new Date().getTime()}', '${username}')`);
-    if (resData.affectedRows == 1) {
-      resData = {
-        status: 0,
-        msg: 'ok',
-        data: {
-          messageId: messageId
+    let resData = {};
+    // console.log(mailOptions);
+    try {
+      let messageId = await this.sendEmail(mailOptions);
+      // console.log(messageId);
+      resData = await this.app.mysql.query(`insert into code (code, messageId, create_time, username) values ('${code}', '${messageId}', '${new Date().getTime()}', '${username}')`);
+      if (resData.affectedRows == 1) {
+        resData = {
+          status: 0,
+          msg: 'ok',
+          data: {
+            messageId: messageId
+          }
+        }
+      } else {
+        resData = { 
+          status: 1,
+          msg: '系统出错',
         }
       }
-    } else {
-      resData = { 
+    } catch (error) {
+      console.log(error);
+      resData = {
         status: 1,
-        msg: '系统出错',
+        msg: '发送失败，请重新输入'
       }
     }
 
@@ -285,7 +300,8 @@ class AllService extends Service {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          return console.log(error);
+          console.log(error, "131231313131313");
+          reject("发送失败，请重新输入");
         } else {
           resolve(info.messageId);
         }
