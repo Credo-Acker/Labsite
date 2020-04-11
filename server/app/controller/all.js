@@ -60,6 +60,7 @@ class AllController extends Controller {
     const { ctx } = this;
     let identity = ctx.cookies.get('identity');
     let name = decodeURI(ctx.cookies.get('name'), "utf8");
+    let email = ctx.cookies.get('email');
     
     ctx.status = 200;
     ctx.body = {
@@ -67,7 +68,8 @@ class AllController extends Controller {
       msg: 'ok',
       data: {
         name,
-        identity
+        identity,
+        email
       }
     }
   }
