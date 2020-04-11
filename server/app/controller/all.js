@@ -16,7 +16,8 @@ class AllController extends Controller {
       let token = jsonwebtoken.sign({
         username: data.username,
         identity: checkData[0].identity,
-        name: checkData[0].name //需要存储的 token 数据
+        name: checkData[0].name,
+        email: checkData[0].email //需要存储的 token 数据
       }, app.config.jwt.secret, { expiresIn: '1h' });
       ctx.cookies.set("token", token, {
         maxAge: 60 * 60 * 1000,
@@ -31,6 +32,10 @@ class AllController extends Controller {
         httpOnly: true,
       });
       ctx.cookies.set("name", encodeURI(checkData[0].name, "utf8"), {
+        maxAge: 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      ctx.cookies.set("email", checkData[0].email, {
         maxAge: 60 * 60 * 1000,
         httpOnly: true,
       });
@@ -82,6 +87,10 @@ class AllController extends Controller {
       httpOnly: true,
     });
     ctx.cookies.set("identity", 0, {
+      maxAge: 60 * 60 * 1000,
+      httpOnly: true,
+    });
+    ctx.cookies.set("email", 0, {
       maxAge: 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -167,7 +176,8 @@ class AllController extends Controller {
   async requestEditPassword() {
     const { ctx } = this;
     const data = ctx.request.query;
-    let resData = await this.service.all.requestEditPassword(data.username);
+    let username = data.username ? data.username : ctx.cookies.get('username');
+    let resData = await this.service.all.requestEditPassword(username);
 
     if (resData.data.messageId) {
       ctx.cookies.set("messageId", resData.data.messageId, {

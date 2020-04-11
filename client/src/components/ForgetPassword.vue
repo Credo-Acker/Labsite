@@ -1,7 +1,7 @@
 <template>
     <div id="forgetPassword">
         <div class="forgetDiv">
-            <p><span class="label">登录名：</span><el-input v-model="username" class="username"></el-input></p>
+            <p v-if="canInputUsername"><span class="label">登录名：</span><el-input v-model="username" class="username"></el-input></p>
             <p><span class="label">新密码：</span><el-input v-model="password1" type="password" class="password1"></el-input></p>
             <p><span class="label">确认密码：</span><el-input v-model="password2" type="password" class="password2"></el-input></p>
             <p><span class="label">邮箱安全码：</span><el-input v-model="code" maxlength="6" class="code"></el-input></p>
@@ -28,10 +28,14 @@ export default {
             loading: {},
             time: 30, // 计算秒数
             timer: null,
+            canInputUsername: true,
         }
     },
     mounted: function() {
-        console.log('ForgetPassword');
+        console.log(this.$route.query.username);
+        if (this.$route.query.username == 'false') {
+            this.canInputUsername = false;
+        }
     },
     methods: {
         getCode() {
@@ -57,7 +61,12 @@ export default {
                             message: '发送成功，如未收到请查看垃圾箱'
                         })
                         this.waitResend();
-                        
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: data.msg
+                        })
+                        this.loading.close();
                     }
                 })
                 .catch(err => {

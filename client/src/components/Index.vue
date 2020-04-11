@@ -4,9 +4,6 @@
             <span class="title">实验中心教学管理网站</span>
             <div class="headerRight">
                 <span class="login" :class="{logined: isLogined}" @click="login">登录</span>
-                <!-- <span class="username">{{ username }}</span>
-                <span class="logout" :class="{canChangePwd: canChangePwd}" @click="changePwd">修改密码</span>
-                <span class="logout" :class="{canlogout: canLogout}" @click="logout">退出</span> -->
                 <span class="username" :class="{canlogout: canLogout}">{{ username }}</span>
                 <span class="logout canChangePwd" :class="{canlogout: canLogout}" @click="changePwd">修改密码</span>
                 <span class="logout" :class="{canlogout: canLogout}" @click="logout">退出</span>
@@ -74,6 +71,7 @@ export default {
             ],
             dialogLoginVisible: false,
             loading: {},
+            email: '',
         }
     },
     mounted: function () {
@@ -120,6 +118,7 @@ export default {
                             path: 'setPeriod'
                         })
                     }
+                    this.email = data.data.email;
                     this.isLogined = true;
                     this.dialogLoginVisible = false;
                     this.canLogout = true;
@@ -189,6 +188,7 @@ export default {
                         if (data.data.email == null || data.data.email == '') {
                             this.bindEmail();
                         }
+                        this.email = data.data.email;
                         this.isLogined = true;
                         this.dialogLoginVisible = false;
                         this.canLogout = true;
@@ -210,7 +210,11 @@ export default {
                 })
         },
         changePwd() {
-            this.$router.push({ name: 'forgetPassword' });
+            if (this.email == null || this.email == '') {
+                this.bindEmail();
+            } else {
+                this.$router.push({ name: 'forgetPassword', query: { username: 'false' } });
+            }
         },
         bindEmail() {
             this.$prompt('请输入绑定邮箱', '提示', {
@@ -393,7 +397,6 @@ export default {
 }
 .username {
     margin-right: 10px;
-    cursor: pointer;
 }
 .menu {
     overflow: hidden;

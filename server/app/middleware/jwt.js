@@ -10,7 +10,8 @@ module.exports = (options, app) => {
         let token = jwt.sign({
           username: res.username,
           name: res.name,
-          identity: res.identity //需要存储的 token 数据
+          identity: res.identity,
+          email: res.email, //需要存储的 token 数据
         }, app.config.jwt.secret, { expiresIn: '1h' });
         ctx.cookies.set("token", token, {
           maxAge: 60 * 60 * 1000,
@@ -25,6 +26,10 @@ module.exports = (options, app) => {
           httpOnly: true,
         });
         ctx.cookies.set("identity", res.identity, {
+          maxAge: 60 * 60 * 1000,
+          httpOnly: true,
+        });
+        ctx.cookies.set("email", res.email, {
           maxAge: 60 * 60 * 1000,
           httpOnly: true,
         });

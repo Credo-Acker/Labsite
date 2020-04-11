@@ -134,7 +134,6 @@ class AllService extends Service {
       };
       console.log(mailOptions);
       let messageId = await this.sendEmail(mailOptions);
-      console.log(messageId);
       resData = await this.app.mysql.query(`insert into code (code, messageId, create_time, username) values ('${code}', '${messageId}', '${new Date().getTime()}', '${username}')`);
       if (resData.affectedRows == 1) {
         resData = {
