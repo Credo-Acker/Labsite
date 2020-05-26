@@ -14,6 +14,8 @@ class AllService extends Service {
 
   async getMyCourse(username, identity, page) {
     let resData = {};
+    let period = await this.app.mysql.query(`select period from period order by period desc limit 1`);
+    period = period[0].period;
     if (identity == 1) { // 学生获取我的课程
       // let want = ['a.course_id', 'b.course_name', 'c.name as course_teacher', 'b.study_class', 'b.create_time', 'b.note'];
       let want = ['a.study_class', 'a.course_id', 'b.course_name', 'a.create_time', 'a.note', 'c.name as course_teacher'];
@@ -22,7 +24,7 @@ class AllService extends Service {
       let courseData = await this.app.mysql.query(`select ${want.join(',')} from class a 
         left join course b on a.course_id=b.course_id
         left join user c on a.course_teacher_id=c.username
-        where a.study_class in (select study_class from student_course where username='${username}') 
+        where a.study_class in (select study_class from student_course where username='${username}') and period=${period} 
         limit ${page * 10},10`);
       resData = {
         total,
@@ -37,7 +39,7 @@ class AllService extends Service {
       let courseData = await this.app.mysql.query(`select ${want.join(',')} from class a 
         left join course b on a.course_id=b.course_id
         left join user c on a.course_teacher_id=c.username
-        where a.course_teacher_id='${username}'
+        where a.course_teacher_id='${username}' and period=${period}
         limit ${page * 10},10`);
       // let courseData = await this.app.mysql.query(`select ${want.join(',')} from course where course_teacher_id='${username}' limit ${page * 10},10`);
       resData = {
@@ -106,10 +108,10 @@ class AllService extends Service {
 
   async getResource(data) {
     let { keyword, type, page } = data;
-    let want = ['name', 'teacher', 'address', 'username', 'create_time'];
+    let want = ['a.name', 'b.name', 'a.address', 'a.username', 'a.create_time'];
 
     let total = await this.app.mysql.query(`select count(*) as total from resource where ${type} like '%${keyword}%'`);
-    let resourceData = await this.app.mysql.query(`select ${want.join(',')} from resource where ${type} like '%${keyword}%' limit ${page * 10},10 `);
+    let resourceData = await this.app.mysql.query(`select ${want.join(',')} from resource a left join user b on a.username=b.username where ${type} like '%${keyword}%' limit ${page * 10},10 `);
     let resData = {
       total: total[0].total,
       page: page,
@@ -174,7 +176,7 @@ class AllService extends Service {
     let checkData = await this.app.mysql.query(`select * from code where code='${code}' and messageId='${messageId}'`);
     if (checkData.length == 1) {
       checkData = checkData[0];
-      if (code == checkData.code && username == checkData.username && checkData.valide == 0 && ((datetime - checkData.create_time) / 1000) <= 1800) {
+      if (username == checkData.username && checkData.valide == 0 && ((datetime - checkData.create_time) / 1000) <= 1800) {
         let md5 = crypto.createHash('md5');
         let md5Update = md5.update(password).digest('hex');
         let changeData = await this.app.mysql.query(`update user set password='${md5Update}' where username='${username}'`);
@@ -254,7 +256,7 @@ class AllService extends Service {
     let checkData = await this.app.mysql.query(`select * from code where code='${code}' and messageId='${messageId}'`);
     if (checkData.length == 1) {
       checkData = checkData[0];
-      if (code == checkData.code && username == checkData.username && checkData.valide == 0 && ((datetime - checkData.create_time) / 1000) <= 1800) {
+      if (username == checkData.username && checkData.valide == 0 && ((datetime - checkData.create_time) / 1000) <= 1800) {
         let changeData = await this.app.mysql.query(`update user set email='${email}' where username='${username}'`);
         await this.app.mysql.query(`update code set valide=1 where code='${code}' and messageId='${messageId}'`);
         if (changeData.affectedRows == 1) {
@@ -300,7 +302,6 @@ class AllService extends Service {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(error, "131231313131313");
           reject("发送失败，请重新输入");
         } else {
           resolve(info.messageId);
