@@ -108,10 +108,15 @@ class AllService extends Service {
 
   async getResource(data) {
     let { keyword, type, page } = data;
-    let want = ['a.name', 'b.name', 'a.address', 'a.username', 'a.create_time'];
+    let want = ['a.name as name', 'b.name as teacher', 'a.address', 'a.username', 'a.create_time'];
+    if (type == 'name') {
+      type = 'a.name';
+    } else if (type == 'teacher') {
+      type = 'b.name';
+    }
 
     let total = await this.app.mysql.query(`select count(*) as total from resource where ${type} like '%${keyword}%'`);
-    let resourceData = await this.app.mysql.query(`select ${want.join(',')} from resource a left join user b on a.username=b.username where a.${type} like '%${keyword}%' limit ${page * 10},10 `);
+    let resourceData = await this.app.mysql.query(`select ${want.join(',')} from resource a left join user b on a.username=b.username where ${type} like '%${keyword}%' limit ${page * 10},10 `);
     let resData = {
       total: total[0].total,
       page: page,
