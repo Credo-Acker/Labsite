@@ -115,7 +115,7 @@ class AllService extends Service {
       type = 'b.name';
     }
 
-    let total = await this.app.mysql.query(`select count(*) as total from resource where ${type} like '%${keyword}%'`);
+    let total = await this.app.mysql.query(`select count(*) as total from resource a left join user b on a.username=b.username where ${type} like '%${keyword}%'`);
     let resourceData = await this.app.mysql.query(`select ${want.join(',')} from resource a left join user b on a.username=b.username where ${type} like '%${keyword}%' limit ${page * 10},10 `);
     let resData = {
       total: total[0].total,
