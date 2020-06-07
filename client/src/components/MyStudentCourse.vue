@@ -13,7 +13,6 @@
                          <div class="course_detail" v-for="(detailItem, detailIndex) in nowTask" :key="detailIndex">
                             {{ detailItem.name }}
                             <p class="primaryAcce"><span @click="downloadThis(detailItem.accessory_address[0], detailItem.accessory[0])">{{ detailItem.accessory[0] }}</span></p>
-                            <!-- <p class="primaryAcce"><a :href="detailItem.accessory_address[0]" download>{{ detailItem.accessory[0] }}</a></p> -->
                             <div class="classButtons">
                                 <el-button type="primary" class="allButton" size="mini" @click="showAllAccessory(detailItem, props)">全部附件</el-button>
                                 <el-button type="primary" class="homeworkButton" size="mini" @click="showAllHomework(detailItem, props)">我的作业</el-button>
@@ -391,6 +390,7 @@ export default {
 .downloadAcceButton {
     margin-right: 20px;
     color: #409EFF;
+    cursor: pointer;
 }
 .downloadHomeworkButton {
     max-width: 180px;
@@ -413,7 +413,7 @@ export default {
 .primaryAcce {
     display: inline-block;
     margin-left: 20px;
-    width: 300px;
+    min-width: 300px;
 }
 .primaryAcce span {
     color: #409eff;
