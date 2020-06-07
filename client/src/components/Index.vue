@@ -138,7 +138,11 @@ export default {
             })
     },
     methods: {
-        login() {
+        login() { 
+            this.form = {
+                username: '',
+                password: ''
+            }
             this.dialogLoginVisible = true;
         },
         loginLab() {
@@ -198,7 +202,12 @@ export default {
                             type: 'success'
                         })
                         sessionStorage.setItem('username', data.data.name);
+                        this.form = {
+                            username: '',
+                            password: ''
+                        }
                     } else {
+                        this.form.password = '';
                         this.$message({
                             message: data.msg,
                             type: 'warning'
@@ -207,6 +216,10 @@ export default {
                     
                 }).catch((err) => {
                     console.log('err', err);
+                    this.form = {
+                        username: '',
+                        password: ''
+                    }
                 })
         },
         changePwd() {
