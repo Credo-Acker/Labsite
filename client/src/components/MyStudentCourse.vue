@@ -414,7 +414,6 @@ export default {
     display: inline-block;
     margin-left: 20px;
     min-width: 180px;
-    overflow: hidden;
 }
 .primaryAcce span {
     color: #409eff;
