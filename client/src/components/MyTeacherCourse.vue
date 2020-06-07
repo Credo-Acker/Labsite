@@ -927,6 +927,7 @@ export default {
     display: inline-block;
     margin-left: 20px;
     min-width: 180px;
+    max-width: 520px;
 }
 .primaryAcce span {
     cursor: pointer;
